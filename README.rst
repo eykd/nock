@@ -77,6 +77,17 @@ Horrifying, innit? Welcome to life in the offworld colonies. The air gets instal
 
 Unfortunately, there's no parser yet, so you have to translate that lovely Nock syntax into verbose Python function calls and tuples, but we use true names for all the operators, so we only help you sink deeper into the water. Is that really water? Either way, soon enough, you won't even realize you're breathing it.
 
+Tests
+=====
+
+Did I mention we have tests? Lots and lots of glorious doctests. Well, for everything except lines 32 and 32. I have no idea what those are about, but I'm sure they're fine.
+
+To run the tests, install nose_ and run it with::
+
+    nosetests --with-doctest
+
+.. _nose: https://pypi.python.org/pypi/nose/
+
 
 Credits
 =======
