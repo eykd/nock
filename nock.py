@@ -711,6 +711,11 @@ def tar(noun, _v=0):
 ### HELPERS, because WE NEED HELP.
 ##################################
 def _r(noun):
+    """Return a Nock-like repr() of the given noun.
+
+    >>> _r((42, 0, 1))
+    '[42 0 1]'
+    """
     if isinstance(noun, int):
         return repr(noun)
     else:
@@ -718,12 +723,19 @@ def _r(noun):
 
 
 def _d(level, *args):
+    """Log, at the given indentation level, the given logging arguments.
+    """
     level = level * '    '
     a = level + args[0]
     return logger.debug(a, *args[1:])
 
 
 def debug(on=True):
+    """Switch debug mode on.
+
+    This logs each step of a Nock reduction, with indentation, so that you can
+    kinda sorta tell what the heck is going on.
+    """
     root = logging.getLogger()
     if on:
         if not root.handlers:
@@ -734,5 +746,9 @@ def debug(on=True):
 
 
 if __name__ == "__main__":
+    """
+    Since we can run doctests with nose, some day this should be an interactive
+    Nock prompt.
+    """
     import doctest
     doctest.testmod()
