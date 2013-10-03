@@ -2,7 +2,7 @@
 Nock!
 =====
 
-If you don't know what Nock is, you better start `here`_. It'll take you a while. Don't worry. We'll still be here when you get back.
+If you don't know what Nock is, you had better start `here`_. It'll take you a while. Don't worry. We'll still be here when you get back.
 
 .. _here: http://www.urbit.org
 
@@ -80,7 +80,7 @@ Unfortunately, there's no parser yet, so you have to translate that lovely Nock 
 Tests
 =====
 
-Did I mention we have tests? Lots and lots of glorious doctests. Well, for everything except lines 32 and 32. I have no idea what those are about, but I'm sure they're fine.
+Did we mention we have tests? Bushels and bushels of glorious doctests. Well, for everything except lines 31 and 32. We have no idea what those are about, but we're sure they're just fine.
 
 To run the tests, install nose_ and run it with::
 
@@ -88,6 +88,12 @@ To run the tests, install nose_ and run it with::
 
 .. _nose: https://pypi.python.org/pypi/nose/
 
+Contributing
+============
+
+Is something bothering you? Join the club. Join the club and `open an issue`_, that is. Do you have a way to make this better? Do you happen to have a Nock parser burning a hole in your back pocket? DO YOU UNDERSTAND WHAT LINES 31 AND 32 MEAN, AND CAN YOU WRITE TESTS TO PROVE IT?! Open a *pull request*.
+
+.. _open an issue: https://github.com/eykd/nock/issues
 
 Credits
 =======
