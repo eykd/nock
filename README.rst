@@ -23,10 +23,59 @@ The module is written in a literate style (cribbing generously from urbit.org). 
     DEBUG:nock:    +42
     Out[3]: 43
 
+Or better yet::
+
+    In [4]: tar((42, (6, (1, 0), (4, 0, 1), (1, 233))))
+    DEBUG:nock:-> *[42 [6 [[1 0] [[4 [0 1]] [1 233]]]]]
+    DEBUG:nock:    <- 28 ::    *[a 6 b c d]      *[a 2 [0 1] 2 [1 c d] [1 0] 2 [1 2 3] [1 0] 4 4 b]
+    DEBUG:nock:    -> *[42 [2 [[0 1] [2 [[1 [[4 [0 1]] [1 233]]] [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]]]]]
+    DEBUG:nock:        <- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]
+    DEBUG:nock:        -> *[42 [0 1]]
+    DEBUG:nock:            <- 21 ::    *[a 0 b]          /[b a]
+    DEBUG:nock:            /[1 42]
+    DEBUG:nock:        -> *[42 [2 [[1 [[4 [0 1]] [1 233]]] [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]]]
+    DEBUG:nock:            <- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]
+    DEBUG:nock:            -> *[42 [1 [[4 [0 1]] [1 233]]]]
+    DEBUG:nock:                <- 22 ::    *[a 1 b]          b
+    DEBUG:nock:            -> *[42 [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]
+    DEBUG:nock:                <- 19 ::    *[a [b c] d]      [*[a b c] *[a d]]
+    DEBUG:nock:                -> *[42 [1 0]]
+    DEBUG:nock:                    <- 22 ::    *[a 1 b]          b
+    DEBUG:nock:                -> *[42 [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]
+    DEBUG:nock:                    <- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]
+    DEBUG:nock:                    -> *[42 [1 [2 3]]]
+    DEBUG:nock:                        <- 22 ::    *[a 1 b]          b
+    DEBUG:nock:                    -> *[42 [[1 0] [4 [4 [1 0]]]]]
+    DEBUG:nock:                        <- 19 ::    *[a [b c] d]      [*[a b c] *[a d]]
+    DEBUG:nock:                        -> *[42 [1 0]]
+    DEBUG:nock:                            <- 22 ::    *[a 1 b]          b
+    DEBUG:nock:                        -> *[42 [4 [4 [1 0]]]]
+    DEBUG:nock:                            <- 25 ::    *[a 4 b]          +*[a b]
+    DEBUG:nock:                            -> *[42 [4 [1 0]]]
+    DEBUG:nock:                                <- 25 ::    *[a 4 b]          +*[a b]
+    DEBUG:nock:                                -> *[42 [1 0]]
+    DEBUG:nock:                                    <- 22 ::    *[a 1 b]          b
+    DEBUG:nock:                                +0
+    DEBUG:nock:                            +1
+    DEBUG:nock:                    -> *[[2 3] [0 2]]
+    DEBUG:nock:                        <- 21 ::    *[a 0 b]          /[b a]
+    DEBUG:nock:                        /[2 [2 3]]
+    DEBUG:nock:            -> *[[[4 [0 1]] [1 233]] [0 2]]
+    DEBUG:nock:                <- 21 ::    *[a 0 b]          /[b a]
+    DEBUG:nock:                /[2 [[4 [0 1]] [1 233]]]
+    DEBUG:nock:        -> *[42 [4 [0 1]]]
+    DEBUG:nock:            <- 25 ::    *[a 4 b]          +*[a b]
+    DEBUG:nock:            -> *[42 [0 1]]
+    DEBUG:nock:                <- 21 ::    *[a 0 b]          /[b a]
+    DEBUG:nock:                /[1 42]
+    DEBUG:nock:            +42
+    Out[4]: 43
+
+Horrifying, innit? Welcome to life in the offworld colonies. The air gets installed next week.
 
 .. _close reading: https://github.com/eykd/nock/blob/master/nock.py
 
-Unfortunately, there's no parser yet, so you have to translate into function calls and tuples, but we use true names for all the operators, so we only help you sink deeper into the water. Soon enough, you won't even realize you're breathing it.
+Unfortunately, there's no parser yet, so you have to translate that lovely Nock syntax into verbose Python function calls and tuples, but we use true names for all the operators, so we only help you sink deeper into the water. Is that really water? Either way, soon enough, you won't even realize you're breathing it.
 
 
 Credits
