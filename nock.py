@@ -5,6 +5,9 @@ import collections
 import logging
 logger = logging.getLogger('nock')
 DEFAULT_LEVEL = logger.getEffectiveLevel()
+__all__ = ['YES', 'NO', 'fas', 'lus', 'nock', 'tar', 'tis', 'wut',
+           'debug']
+
 """
 1 Structures
 
@@ -706,6 +709,9 @@ def tar(noun, _v=0):
                 _d(_v1, "<- 33 ::    *[a 10 b c]       *[a c]")
                 c = fas((3, obj), False)
                 return tar((subj, c), _v=_v1)
+
+
+nock = tar
 
 
 ### HELPERS, because WE NEED HELP.
