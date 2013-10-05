@@ -15,9 +15,9 @@ The module is written in a literate style (cribbing generously from urbit.org). 
     In [2]: debug()
 
     In [3]: tar((42, (4, 0, 1)))
-    DEBUG:nock:-> *[42 [4 [0 1]]]
+    DEBUG:nock:*[42 [4 [0 1]]]
     DEBUG:nock:    <- 25 ::    *[a 4 b]          +*[a b]
-    DEBUG:nock:    -> *[42 [0 1]]
+    DEBUG:nock:    *[42 [0 1]]
     DEBUG:nock:        <- 21 ::    *[a 0 b]          /[b a]
     DEBUG:nock:        /[1 42]
     DEBUG:nock:    +42
@@ -26,46 +26,46 @@ The module is written in a literate style (cribbing generously from urbit.org). 
 Or better yet::
 
     In [4]: tar((42, (6, (1, 0), (4, 0, 1), (1, 233))))
-    DEBUG:nock:-> *[42 [6 [[1 0] [[4 [0 1]] [1 233]]]]]
+    DEBUG:nock:*[42 [6 [[1 0] [[4 [0 1]] [1 233]]]]]
     DEBUG:nock:    <- 28 ::    *[a 6 b c d]      *[a 2 [0 1] 2 [1 c d] [1 0] 2 [1 2 3] [1 0] 4 4 b]
-    DEBUG:nock:    -> *[42 [2 [[0 1] [2 [[1 [[4 [0 1]] [1 233]]] [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]]]]]
+    DEBUG:nock:    *[42 [2 [[0 1] [2 [[1 [[4 [0 1]] [1 233]]] [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]]]]]
     DEBUG:nock:        <- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]
-    DEBUG:nock:        -> *[42 [0 1]]
+    DEBUG:nock:        *[42 [0 1]]
     DEBUG:nock:            <- 21 ::    *[a 0 b]          /[b a]
     DEBUG:nock:            /[1 42]
-    DEBUG:nock:        -> *[42 [2 [[1 [[4 [0 1]] [1 233]]] [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]]]
+    DEBUG:nock:        *[42 [2 [[1 [[4 [0 1]] [1 233]]] [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]]]
     DEBUG:nock:            <- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]
-    DEBUG:nock:            -> *[42 [1 [[4 [0 1]] [1 233]]]]
+    DEBUG:nock:            *[42 [1 [[4 [0 1]] [1 233]]]]
     DEBUG:nock:                <- 22 ::    *[a 1 b]          b
-    DEBUG:nock:            -> *[42 [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]
+    DEBUG:nock:            *[42 [[1 0] [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]]
     DEBUG:nock:                <- 19 ::    *[a [b c] d]      [*[a b c] *[a d]]
-    DEBUG:nock:                -> *[42 [1 0]]
+    DEBUG:nock:                *[42 [1 0]]
     DEBUG:nock:                    <- 22 ::    *[a 1 b]          b
-    DEBUG:nock:                -> *[42 [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]
+    DEBUG:nock:                *[42 [2 [[1 [2 3]] [[1 0] [4 [4 [1 0]]]]]]]
     DEBUG:nock:                    <- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]
-    DEBUG:nock:                    -> *[42 [1 [2 3]]]
+    DEBUG:nock:                    *[42 [1 [2 3]]]
     DEBUG:nock:                        <- 22 ::    *[a 1 b]          b
-    DEBUG:nock:                    -> *[42 [[1 0] [4 [4 [1 0]]]]]
+    DEBUG:nock:                    *[42 [[1 0] [4 [4 [1 0]]]]]
     DEBUG:nock:                        <- 19 ::    *[a [b c] d]      [*[a b c] *[a d]]
-    DEBUG:nock:                        -> *[42 [1 0]]
+    DEBUG:nock:                        *[42 [1 0]]
     DEBUG:nock:                            <- 22 ::    *[a 1 b]          b
-    DEBUG:nock:                        -> *[42 [4 [4 [1 0]]]]
+    DEBUG:nock:                        *[42 [4 [4 [1 0]]]]
     DEBUG:nock:                            <- 25 ::    *[a 4 b]          +*[a b]
-    DEBUG:nock:                            -> *[42 [4 [1 0]]]
+    DEBUG:nock:                            *[42 [4 [1 0]]]
     DEBUG:nock:                                <- 25 ::    *[a 4 b]          +*[a b]
-    DEBUG:nock:                                -> *[42 [1 0]]
+    DEBUG:nock:                                *[42 [1 0]]
     DEBUG:nock:                                    <- 22 ::    *[a 1 b]          b
     DEBUG:nock:                                +0
     DEBUG:nock:                            +1
-    DEBUG:nock:                    -> *[[2 3] [0 2]]
+    DEBUG:nock:                    *[[2 3] [0 2]]
     DEBUG:nock:                        <- 21 ::    *[a 0 b]          /[b a]
     DEBUG:nock:                        /[2 [2 3]]
-    DEBUG:nock:            -> *[[[4 [0 1]] [1 233]] [0 2]]
+    DEBUG:nock:            *[[[4 [0 1]] [1 233]] [0 2]]
     DEBUG:nock:                <- 21 ::    *[a 0 b]          /[b a]
     DEBUG:nock:                /[2 [[4 [0 1]] [1 233]]]
-    DEBUG:nock:        -> *[42 [4 [0 1]]]
+    DEBUG:nock:        *[42 [4 [0 1]]]
     DEBUG:nock:            <- 25 ::    *[a 4 b]          +*[a b]
-    DEBUG:nock:            -> *[42 [0 1]]
+    DEBUG:nock:            *[42 [0 1]]
     DEBUG:nock:                <- 21 ::    *[a 0 b]          /[b a]
     DEBUG:nock:                /[1 42]
     DEBUG:nock:            +42

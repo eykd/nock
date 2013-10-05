@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 """nock -- working through http://www.urbit.org/2013/08/22/Chapter-2-nock.html
+
+N.B. Implementation functions have a `_` prefix. Public functions do not. Don't worry to much about it. Just use the prefix-less versions when playing around, as they have all the debug niceties.
 """
 import collections
+import contextlib
 import logging
+
 logger = logging.getLogger('nock')
 DEFAULT_LEVEL = logger.getEffectiveLevel()
 __all__ = ['YES', 'NO', 'fas', 'lus', 'nock', 'tar', 'tis', 'wut',
@@ -65,7 +69,7 @@ To be exact, a noun is an S-expression, except that classic S-expressions have m
 
 For instance, it’s common to represent strings (or even whole text files) as atoms, arranging them LSB first - so “foo” becomes 0x6f6f66. How do we know to print this as “foo”, not 0x6f6f66? We need external information - such as a Hoon type. Similarly, other common atomic types - signed integers, floating point, etc - are all straightforward to map into atoms.
 
-It’s also important to note that, unlike Lisp, Nock cannot create cyclical data structures. It is normal and common for nouns in a Nock runtime system to have acyclic structure - shared subtrees. But there is no Nock computation that can make a child point to its parent. One consequence: Nock has no garbage collector. (Nor can dag structure be detected, as with Lisp eq.)
+It’s also important to note that, unlike Lisp, Nock cannot create cyclical data structures. It is normal and common for nouns in a Nock runtime system to have acyclic structure - shared subtrees. But there is no Nock computatioen that can make a child point to its parent. One consequence: Nock has no garbage collector. (Nor can dag structure be detected, as with Lisp eq.)
 
 There is also no single syntax for nouns. If you have nouns you have Nock; if you have Nock you have Hoon; if you have Hoon, you can write whatever parser you like.
 
@@ -178,7 +182,7 @@ YES = 0
 NO  = 1
 
 
-def wut(noun, _log=True, _v=0):
+def _wut(noun):
     """? :: Test whether a noun is a cell or an atom.
 
     4  ::    ?[a b]            0
@@ -189,12 +193,10 @@ def wut(noun, _log=True, _v=0):
     >>> wut(1)
     1
     """
-    if _log:
-        _d(_v, '?%s', _r(noun))
     return NO if isinstance(noun, int) else YES
 
 
-def lus(noun, _log=True, _v=0):
+def _lus(noun):
     """+ :: Increment an atom.
 
     6  ::    +[a b]            +[a b]
@@ -205,12 +207,10 @@ def lus(noun, _log=True, _v=0):
     >>> lus(1)
     2
     """
-    if _log:
-        _d(_v, '+%s', _r(noun))
     return (1 + noun) if isinstance(noun, int) else noun
 
 
-def tis(noun, _log=True, _v=0):
+def _tis(noun):
     """= :: test for equality
 
     8  ::    =[a a]            0
@@ -221,8 +221,6 @@ def tis(noun, _log=True, _v=0):
     >>> tis((1, 0))
     1
     """
-    if _log:
-        _d(_v, '=%s', _r(noun))
     return YES if noun[0] == noun[1] else NO
 
 
@@ -271,7 +269,7 @@ I do hope this isn’t so terribly hard to follow.
 """
 
 
-def fas((n, noun), _log=True, _v=0):
+def _fas((n, noun)):
     """Return the specified slot from the given noun.
 
     12 ::    /[1 a]            a
@@ -291,8 +289,6 @@ def fas((n, noun), _log=True, _v=0):
     (14, 15)
     """
     noun = _aorc(noun)
-    if _log:
-        _d(_v, '/%s', _r((n, noun)))
     try:
         if n == 1:
             return noun
@@ -301,9 +297,9 @@ def fas((n, noun), _log=True, _v=0):
         elif n == 3:
             return noun[1]
         elif n % 2 == 0:  # even
-            return fas((2, fas((n // 2, noun), False)), False)
+            return _fas((2, _fas((n // 2, noun))))
         elif n % 2 == 1:  # odd
-            return fas((3, fas(((n - 1) // 2, noun), False)), False)
+            return _fas((3, _fas(((n - 1) // 2, noun))))
         else:
             return noun
     except TypeError:
@@ -575,7 +571,7 @@ OP_H09 = 9
 OP_H10 = 10
 
 
-def tar(noun, _v=0):
+def _tar(noun):
     """*[a, b] -- Reduce a Nock expression.
 
     ## 19 ::    *[a [b c] d]      [*[a b c] *[a d]]
@@ -637,81 +633,77 @@ def tar(noun, _v=0):
     20
     """
     noun = _t(*noun)
-    _v1 = _v + 1
-    _d(_v, '-> *%s', _r(noun))
-    # Let's use `fas` to carve up the noun, for practice.
-    subj = fas((2, noun), False)  # noun[0]
-    op = fas((6, noun), False)  # noun[1][0]
-    obj = fas((7, noun), False)  # noun[1][1]
-    if wut(op, False) == YES:
-        _d(_v1, "<- 19 ::    *[a [b c] d]      [*[a b c] *[a d]]")
-        return (tar((subj, op), _v=_v1), tar((subj, obj), _v=_v1))
-    else:
-        if op == OP_FAS:
-            _d(_v1, "<- 21 ::    *[a 0 b]          /[b a]")
-            return fas((obj, subj), _v=_v1)
+    # Let's use `_fas` to carve up the noun, for practice.
+    subj = _fas((2, noun))  # noun[0]
+    op = _fas((6, noun))  # noun[1][0]
+    obj = _fas((7, noun))  # noun[1][1]
+    with _indent():
+        if _wut(op) == YES:
+            _d("<- 19 ::    *[a [b c] d]      [*[a b c] *[a d]]")
+            return (tar((subj, op)), tar((subj, obj)))
+        else:
+            if op == OP_FAS:
+                _d("<- 21 ::    *[a 0 b]          /[b a]")
+                return fas((obj, subj))
 
-        elif op == OP_CON:
-            _d(_v1, "<- 22 ::    *[a 1 b]          b")
-            return obj
+            elif op == OP_CON:
+                _d("<- 22 ::    *[a 1 b]          b")
+                return obj
 
-        elif op == OP_TAR:
-            _d(_v1, "<- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]")
-            b = fas((2, obj), False)
-            c = fas((3, obj), False)
-            return tar((tar((subj, b), _v=_v1), tar((subj, c), _v=_v1)), _v=_v1)
+            elif op == OP_TAR:
+                _d("<- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]")
+                b = _fas((2, obj))
+                c = _fas((3, obj))
+                return tar((tar((subj, b)), tar((subj, c))))
 
-        elif op == OP_WUT:
-            _d(_v1, "<- 24 ::    *[a 3 b]          ?*[a b]")
-            return wut(tar((subj, obj), _v=_v1), _v=_v1)
+            elif op == OP_WUT:
+                _d("<- 24 ::    *[a 3 b]          ?*[a b]")
+                return wut(tar((subj, obj)))
 
-        elif op == OP_LUS:
-            _d(_v1, "<- 25 ::    *[a 4 b]          +*[a b]")
-            return lus(tar((subj, obj), _v=_v1), _v=_v1)
+            elif op == OP_LUS:
+                _d("<- 25 ::    *[a 4 b]          +*[a b]")
+                return lus(tar((subj, obj)))
 
-        elif op == OP_TIS:
-            _d(_v1, "<- 26 ::    *[a 5 b]          =*[a b]")
-            return tis(tar((subj, obj), _v=_v1), _v=_v1)
+            elif op == OP_TIS:
+                _d("<- 26 ::    *[a 5 b]          =*[a b]")
+                return tis(tar((subj, obj)))
 
-        elif op == OP_IF:
-            _d(_v1, "<- 28 ::    *[a 6 b c d]      *[a 2 [0 1] 2 [1 c d] [1 0] 2 [1 2 3] [1 0] 4 4 b]")
-            a = subj
-            b = fas((2, obj), False)
-            c = fas((6, obj), False)
-            d = fas((7, obj), False)
-            return tar((a, 2, (0, 1), 2, (1, c, d), (1, 0), 2, (1, 2, 3), (1, 0), 4, 4, b), _v=_v1)
+            elif op == OP_IF:
+                _d("<- 28 ::    *[a 6 b c d]      *[a 2 [0 1] 2 [1 c d] [1 0] 2 [1 2 3] [1 0] 4 4 b]")
+                a = subj
+                b = _fas((2, obj))
+                c = _fas((6, obj))
+                d = _fas((7, obj))
+                return tar((a, 2, (0, 1), 2, (1, c, d), (1, 0), 2, (1, 2, 3), (1, 0), 4, 4, b))
 
-        elif op == OP_H07:
-            _d(_v1, "<- 29 ::    *[a 7 b c]        *[a 2 b 1 c]")
-            b = fas((2, obj), False)
-            c = fas((3, obj), False)
-            return tar((subj, 2, b, 1, c), _v=_v1)
+            elif op == OP_H07:
+                _d("<- 29 ::    *[a 7 b c]        *[a 2 b 1 c]")
+                b = _fas((2, obj))
+                c = _fas((3, obj))
+                return tar((subj, 2, b, 1, c))
 
-        elif op == OP_H08:
-            _d(_v1, "<- 30 ::    *[a 8 b c]        *[a 7 [[7 [0 1] b] 0 1] c]")
-            b = fas((2, obj), False)
-            c = fas((3, obj), False)
-            return tar((subj, 7, ((7, (0, 1), b), 0, 1), c), _v=_v1)
+            elif op == OP_H08:
+                _d("<- 30 ::    *[a 8 b c]        *[a 7 [[7 [0 1] b] 0 1] c]")
+                b = _fas((2, obj))
+                c = _fas((3, obj))
+                return tar((subj, 7, ((7, (0, 1), b), 0, 1), c))
 
-        elif op == OP_H09:
-            _d(_v1, "<- 31 ::    *[a 9 b c]        *[a 7 c 2 [0 1] 0 b]")
-            b = fas((2, obj), False)
-            c = fas((3, obj), False)
-            return tar((subj, 7, c, 2, (0, 1), 0, b), _v=_v1)
+            elif op == OP_H09:
+                _d("<- 31 ::    *[a 9 b c]        *[a 7 c 2 [0 1] 0 b]")
+                b = _fas((2, obj))
+                c = _fas((3, obj))
+                return tar((subj, 7, c, 2, (0, 1), 0, b))
 
-        elif op == OP_H10:
-            hint = fas((2, obj), False)
-            if wut(hint, False) == YES:
-                _d(_v1, "<- 32 ::    *[a 10 [b c] d]   *[a 8 c 7 [0 3] d]")
-                c = fas((2, hint), False)
-                return tar((subj, 8, c, 7, (0, 3), obj), _v=_v1)
-            else:
-                _d(_v1, "<- 33 ::    *[a 10 b c]       *[a c]")
-                c = fas((3, obj), False)
-                return tar((subj, c), _v=_v1)
-
-
-nock = tar
+            elif op == OP_H10:
+                hint = _fas((2, obj))
+                if _wut(hint) == YES:
+                    _d("<- 32 ::    *[a 10 [b c] d]   *[a 8 c 7 [0 3] d]")
+                    c = _fas((2, hint))
+                    return tar((subj, 8, c, 7, (0, 3), obj))
+                else:
+                    _d("<- 33 ::    *[a 10 b c]       *[a c]")
+                    c = _fas((3, obj))
+                    return tar((subj, c))
 
 
 ### HELPERS, because WE NEED HELP.
@@ -728,12 +720,46 @@ def _r(noun):
         return '[%s]' % ' '.join(_r(i) for i in noun)
 
 
-def _d(level, *args):
+DEBUG_LEVEL = 0
+
+
+@contextlib.contextmanager
+def _indent():
+    """Context manager to raise and lower the debug output indentation level.
+    """
+    global DEBUG_LEVEL
+    DEBUG_LEVEL += 1
+    try:
+        yield
+    finally:
+        DEBUG_LEVEL -= 1
+
+
+def _d(*args):
     """Log, at the given indentation level, the given logging arguments.
     """
-    level = level * '    '
+    level = DEBUG_LEVEL * '    '
     a = level + args[0]
     return logger.debug(a, *args[1:])
+
+
+def _public(original_func, formatter):
+    """Create a public interface w/ debug warts.
+    """
+    def wrapper(noun):
+        _d(formatter, _r(noun))
+        return original_func(noun)
+    wrapper.__name__ = original_func.__name__.replace('_', '')
+    wrapper.__doc__ = original_func.__doc__
+    return wrapper
+
+# Public interface for Nock implementation functions.
+wut = _public(_wut, '?%s')
+lus = _public(_lus, '+%s')
+tis = _public(_tis, '=%s')
+fas = _public(_fas, '/%s')
+tar = _public(_tar, '*%s')
+nock = tar
 
 
 def debug(on=True):
