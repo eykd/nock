@@ -310,7 +310,7 @@ def _fas((n, noun)):
 Line 21:
 --------
 
-Now we enter the definition of Nock itself - ie, the `*` operato, _v=0r.
+Now we enter the definition of Nock itself - ie, the `*` operator.
 
     21 ::    *[a 0 b]          /[b a]
 
