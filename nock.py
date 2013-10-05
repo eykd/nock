@@ -640,7 +640,8 @@ def _tar(noun):
     with _indent():
         if _wut(op) == YES:
             _d("<- 19 ::    *[a [b c] d]      [*[a b c] *[a d]]")
-            return (tar((subj, op)), tar((subj, obj)))
+            with _indent():
+                return (tar((subj, op)), tar((subj, obj)))
         else:
             if op == OP_FAS:
                 _d("<- 21 ::    *[a 0 b]          /[b a]")
@@ -654,7 +655,8 @@ def _tar(noun):
                 _d("<- 23 ::    *[a 2 b c]        *[*[a b] *[a c]]")
                 b = _fas((2, obj))
                 c = _fas((3, obj))
-                return tar((tar((subj, b)), tar((subj, c))))
+                with _indent():
+                    return tar((tar((subj, b)), tar((subj, c))))
 
             elif op == OP_WUT:
                 _d("<- 24 ::    *[a 3 b]          ?*[a b]")
@@ -674,36 +676,42 @@ def _tar(noun):
                 b = _fas((2, obj))
                 c = _fas((6, obj))
                 d = _fas((7, obj))
-                return tar((a, 2, (0, 1), 2, (1, c, d), (1, 0), 2, (1, 2, 3), (1, 0), 4, 4, b))
+                with _indent():
+                    return tar((a, 2, (0, 1), 2, (1, c, d), (1, 0), 2, (1, 2, 3), (1, 0), 4, 4, b))
 
             elif op == OP_H07:
                 _d("<- 29 ::    *[a 7 b c]        *[a 2 b 1 c]")
                 b = _fas((2, obj))
                 c = _fas((3, obj))
-                return tar((subj, 2, b, 1, c))
+                with _indent():
+                    return tar((subj, 2, b, 1, c))
 
             elif op == OP_H08:
                 _d("<- 30 ::    *[a 8 b c]        *[a 7 [[7 [0 1] b] 0 1] c]")
                 b = _fas((2, obj))
                 c = _fas((3, obj))
-                return tar((subj, 7, ((7, (0, 1), b), 0, 1), c))
+                with _indent():
+                    return tar((subj, 7, ((7, (0, 1), b), 0, 1), c))
 
             elif op == OP_H09:
                 _d("<- 31 ::    *[a 9 b c]        *[a 7 c 2 [0 1] 0 b]")
                 b = _fas((2, obj))
                 c = _fas((3, obj))
-                return tar((subj, 7, c, 2, (0, 1), 0, b))
+                with _indent():
+                    return tar((subj, 7, c, 2, (0, 1), 0, b))
 
             elif op == OP_H10:
                 hint = _fas((2, obj))
                 if _wut(hint) == YES:
                     _d("<- 32 ::    *[a 10 [b c] d]   *[a 8 c 7 [0 3] d]")
                     c = _fas((2, hint))
-                    return tar((subj, 8, c, 7, (0, 3), obj))
+                    with _indent():
+                        return tar((subj, 8, c, 7, (0, 3), obj))
                 else:
                     _d("<- 33 ::    *[a 10 b c]       *[a c]")
                     c = _fas((3, obj))
-                    return tar((subj, c))
+                    with _indent():
+                        return tar((subj, c))
 
 
 ### HELPERS, because WE NEED HELP.
@@ -748,7 +756,10 @@ def _public(original_func, formatter):
     """
     def wrapper(noun):
         _d(formatter, _r(noun))
-        return original_func(noun)
+        result = original_func(noun)
+        with _indent():
+            _d(_r(result))
+        return result
     wrapper.__name__ = original_func.__name__.replace('_', '')
     wrapper.__doc__ = original_func.__doc__
     return wrapper
