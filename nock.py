@@ -746,7 +746,7 @@ def _indent():
 def _d(*args):
     """Log, at the given indentation level, the given logging arguments.
     """
-    level = DEBUG_LEVEL * '    '
+    level = DEBUG_LEVEL * ' '
     a = level + args[0]
     return logger.debug(a, *args[1:])
 
