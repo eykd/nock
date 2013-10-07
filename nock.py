@@ -834,7 +834,7 @@ def _construct(tk_iter, token):
         return tuple(out)
     if token in OPS:
         return OPS[token](_construct(tk_iter, tk_iter.next()))
-    elif token in NUMBERS:
+    elif token[0] in NUMBERS:
         return int(token)
 
     raise SyntaxError("Malformed Nock expression.")
@@ -864,7 +864,9 @@ def main():
         DEBUG = False
         while True:
             line = raw_input('-> ').strip()
-            if line == ':q':
+            if not line:
+                continue
+            elif line == ':q':
                 break
 
             elif line.startswith(':debug'):
