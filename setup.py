@@ -29,6 +29,11 @@ SETUP = dict(
     author = "David Eyk",
     author_email = "david.eyk@gmail.com",
     url = "http://github.com/eykd/nock",
+    entry_points = {
+        'console_scripts': [
+            'nock = nock:main',
+        ]
+    },
     license = 'BSD',
     classifiers=[
         'Development Status :: 4 - Beta',

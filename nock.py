@@ -3,6 +3,7 @@
 
 N.B. Implementation functions have a `_` prefix. Public functions do not. Don't worry to much about it. Just use the prefix-less versions when playing around, as they have all the debug niceties.
 """
+import re
 import collections
 import contextlib
 import logging
@@ -764,13 +765,32 @@ def _public(original_func, formatter):
     wrapper.__doc__ = original_func.__doc__
     return wrapper
 
-# Public interface for Nock implementation functions.
+### Public interface for Nock implementation functions.
+#######################################################
 wut = _public(_wut, '?%s')
 lus = _public(_lus, '+%s')
 tis = _public(_tis, '=%s')
 fas = _public(_fas, '/%s')
 tar = _public(_tar, '*%s')
-nock = tar
+
+
+def nock(n):
+    """Reduce a Nock expression.
+
+    >>> nock((2, 0, 1))
+    2
+    >>> nock('[2 0 1]')
+    2
+    >>> nock('*[2 0 1]')
+    2
+    """
+    expr = n
+    if isinstance(n, basestring):
+        expr = parse(n)
+        if n.startswith('*'):
+            return expr
+
+    return tar(expr)
 
 
 def debug(on=True):
@@ -788,10 +808,83 @@ def debug(on=True):
         logger.setLevel(DEFAULT_LEVEL)
 
 
+### The PARSER
+##################
+TOKENS_CP = re.compile(r'\[|\]|[0-9]+|[*?=/+]')
+NUMBERS = set('0123456789')
+OPS = {
+    '/': fas,
+    '+': lus,
+    '*': tar,
+    '=': tis,
+    '?': wut,
+}
+
+
+def _construct(tk_iter, token):
+    """Construct and reduce Nock sub-expressions.
+    """
+    if token == '[':
+        out = []
+        token = tk_iter.next()
+        while token != ']':
+            out.append(_construct(tk_iter, token))
+            token = tk_iter.next()
+
+        return tuple(out)
+    if token in OPS:
+        return OPS[token](_construct(tk_iter, tk_iter.next()))
+    elif token in NUMBERS:
+        return int(token)
+
+    raise SyntaxError("Malformed Nock expression.")
+
+
+def parse(s):
+    """Nock parser.
+
+    Based on effbot's `iterator-based parser`_.
+
+    .. _iterator-based parser: http://effbot.org/zone/simple-iterator-parser.htm
+    """
+    tokens = iter(TOKENS_CP.findall(s))
+    return _construct(tokens, tokens.next())
+
+
+def main():
+    import sys
+    import readline
+    readline.parse_and_bind('tab: complete')
+    logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+
+    print "Welcome to Nock! (`:q` or ^D to quit; `:debug on` to enter debug mode)"
+    print "    (If you're totally confused, read http://www.urbit.org/2013/08/22/Chapter-2-nock.html)"
+    print
+    try:
+        DEBUG = False
+        while True:
+            line = raw_input('-> ').strip()
+            if line == ':q':
+                break
+
+            elif line.startswith(':debug'):
+                if line.endswith('off'):
+                    DEBUG = False
+                elif line.endswith('on'):
+                    DEBUG = True
+                else:
+                    DEBUG = not DEBUG
+
+                debug()
+            else:
+                print _r(parse(line))
+                print
+    except EOFError:
+        pass
+
+    print "Good-bye!"
+    print
+    sys.exit()
+
 if __name__ == "__main__":
-    """
-    Since we can run doctests with nose, some day this should be an interactive
-    Nock prompt.
-    """
-    import doctest
-    doctest.testmod()
+    main()
