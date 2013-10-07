@@ -23,7 +23,7 @@ SETUP = dict(
     },
     zip_safe = False,
 
-    version = "0.1.3",
+    version = "0.2",
     description = "Nock, Nock. Hoon's there?",
     long_description = open(README).read(),
     author = "David Eyk",
